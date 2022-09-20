@@ -21,18 +21,27 @@ namespace BankOfSuccess.Business
         }
         public Account OpenSavingsAccount(string name, int pin, string gender, string phno, DateTime dob, int balance = 500)
         {
-            Account ac = _factory.GetSavingsAccount(name, pin, gender, phno, dob, balance);
-            if(ac!=null)
-                _logger.CreateLog(ac.AccNo);
-            return ac;
+            Account ac;
+            if ((DateTime.Today - dob.Date).TotalDays >= 18 * 365)
+            {
+                ac = _factory.GetSavingsAccount(name, pin, gender, phno, dob, balance);
+                return ac;
+
+            }
+            else
+                throw new AccountException("Age Should be greater than 18");
         }
 
         public Account OpenCurrentAccount(string name, int pin, string company, string website, string regNo, int balance = 500)
         {
-            Account ac = _factory.GetCurrentAccount(name, pin, company, website, regNo, balance = 500);
-            if(ac!=null)
-                _logger.CreateLog(ac.AccNo);
-            return ac;
+            Account ac;
+            if (regNo != null)
+            {
+                ac = _factory.GetCurrentAccount(name, pin, company, website, regNo, balance = 500);
+                return ac;
+            }
+            else
+                throw new AccountException("RegistraionNo cannot be null");
         }
         public bool CloseAccount(Account acc)
         {
