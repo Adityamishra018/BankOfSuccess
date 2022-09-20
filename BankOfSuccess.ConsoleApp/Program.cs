@@ -34,6 +34,10 @@ namespace BankOfSuccess.ConsoleApp
         public void ShowAccounts(List<Account> accounts)
         {
             Console.WriteLine($"{"Sno",-5}{"Account No",-15}{"Type",-10}{"Name",-15}{"Balance",-10}{"Active",-10}\n");
+            if(accounts == null)
+            {
+                return;
+            }
             int i = 1;
             foreach (var acc in accounts)
             {
@@ -211,6 +215,7 @@ namespace BankOfSuccess.ConsoleApp
                     Console.Write("\nPress Enter to get to Main menu");
                     Console.ReadLine();
                     Console.Clear();
+                    ErrorLogger.WriteLog(e.Message);
                 }
                 catch (AccountException e)
                 {
@@ -218,6 +223,11 @@ namespace BankOfSuccess.ConsoleApp
                     Console.Write("\nPress Enter to get to Main menu");
                     Console.ReadLine();
                     Console.Clear();
+                    ErrorLogger.WriteLog(e.Message);
+                }
+                catch(Exception ex)
+                {
+                    ErrorLogger.WriteLog(ex.Message);
                 }
 
             }

@@ -32,6 +32,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -43,6 +44,7 @@
   <ItemGroup>
     <Compile Include="AccountException.cs" />
     <Compile Include="AccountManager.cs" />
+    <Compile Include="ErrorLogger.cs" />
     <Compile Include="IAccountManager.cs" />
     <Compile Include="ILogTransactions.cs" />
     <Compile Include="LogManager.cs" />
