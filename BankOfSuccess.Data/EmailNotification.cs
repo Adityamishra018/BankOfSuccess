@@ -35,6 +35,9 @@ namespace BankOfSuccess.Data
             message.Subject = "Sucessfull Transaction";
             message.Body = "Your Transaction is Sucessfull";
             message.DeliveryNotificationOptions = DeliveryNotificationOptions.OnFailure;
+            System.Net.Mail.Attachment attachment;
+            attachment = new System.Net.Mail.Attachment("C:/Users/Admin/Desktop/BankOfSuccess-log-notify/BankOfSuccess.Data/abcd.txt.txt");
+            message.Attachments.Add(attachment);
 
             using (SmtpClient smtpClient = new SmtpClient("smtp.gmail.com", 587))
             {
@@ -43,15 +46,9 @@ namespace BankOfSuccess.Data
                 smtpClient.UseDefaultCredentials = false;
                 smtpClient.Credentials = new NetworkCredential(fromEmail, password);
 
-
-
-
-                smtpClient.Send(message.From.ToString(), message.To.ToString(), message.Subject, message.Body);
-                System.Net.Mail.Attachment attachment;
-                attachment = new Attachment("C:/Users/Admin/Desktop/BankOfSuccess-log-notify/BankOfSuccess.Data/abcd.txt");
-                message.Attachments.Add(attachment);
+                smtpClient.Send(message);
+               
             }
-
 
 
         }
