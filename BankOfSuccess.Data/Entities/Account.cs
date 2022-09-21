@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BankOfSuccess.Data.Entities
 {
-    public enum PRIVILEGE
+    public enum Privilege
     {
         SILVER = 25000, GOLD = 50000, PREMIUM = 100000
     }
@@ -19,8 +19,9 @@ namespace BankOfSuccess.Data.Entities
         public float Bal { get; set; }
         public DateTime OpeningDate { get; set; }
         public DateTime ClosingDate { get; set; }
-        public PRIVILEGE Privelege { get; set; } = PRIVILEGE.SILVER;
+        public Privilege Privilege { get; set; } = Privilege.SILVER;
         public bool IsActive { get; set; } = true;
+        public List<INotification> notifications { get; set; } = new List<INotification>();
 
         public Account(int accNo, string name, int pin, float bal, DateTime op)
         {
@@ -29,6 +30,23 @@ namespace BankOfSuccess.Data.Entities
             Pin = pin;
             Bal = bal;
             OpeningDate = op;
+        }
+
+        public void SubscribeToNotification(INotification notification)
+        {
+            notifications.Add(notification);
+        }
+        public void UnsubscribeToNotification(INotification notification)
+        {
+            notifications.Remove(notification);
+        }
+
+        public void Notify(Transaction transaction)
+        {
+            foreach (INotification notification in notifications)
+            {
+                notification.Update(transaction);
+            }
         }
     }
 }

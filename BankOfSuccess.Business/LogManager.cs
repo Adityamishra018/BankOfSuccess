@@ -2,56 +2,31 @@
 using System.Collections.Generic;
 using System.Data.SqlTypes;
 using System.Linq;
+using BankOfSuccess.Data;
 
 namespace BankOfSuccess.Business
 {
-    public class LogManager : ILogTransactions
+    public class LogManager : ILogManager
     {
-        private Dictionary<int, Dictionary<TRANSACTIONTYPE, List<Transaction>>> loggers = new Dictionary<int, Dictionary<TRANSACTIONTYPE, List<Transaction>>>();
+        private Dictionary<int, Dictionary<TransactionType, List<Transaction>>> transactionLog = new Dictionary<int, Dictionary<TransactionType, List<Transaction>>>();
 
-        Type GetClassType(TRANSACTIONTYPE t)
+        public void AddTransactionToLog(int fromAccNo, TransactionType transactionType, Transaction t)
         {
-            if (t == TRANSACTIONTYPE.DEPOSIT)
-                return typeof(Deposit);
-            else if (t == TRANSACTIONTYPE.WITHDRAW)
-                return typeof(WithDraw);
-            else
-                return typeof(Transfer);
-        }
-
-        public void CreateLog(int accNo)
-        {
-            if (loggers.ContainsKey(accNo) == false)
+            if (!transactionLog.ContainsKey(fromAccNo))
             {
-                var dict = new Dictionary<TRANSACTIONTYPE, List<Transaction>>();
-                dict.Add(TRANSACTIONTYPE.DEPOSIT, new List<Transaction>());
-                dict.Add(TRANSACTIONTYPE.WITHDRAW, new List<Transaction>());
-                dict.Add(TRANSACTIONTYPE.TRANSFER, new List<Transaction>());
-                loggers.Add(accNo, dict);
+                transactionLog[fromAccNo] = new Dictionary<TransactionType, List<Transaction>>();
             }
-        }
-
-        public void UpdateLog(int from, float amt,TRANSACTIONTYPE type,int to=0)
-        {
-            var t = (Transaction)Activator.CreateInstance(GetClassType(type));
-            t.Acc = from;
-            t.Amt = amt;
-            t.Date = DateTime.Now;
-            if (GetClassType(type) == typeof(Transfer))
+            if (!transactionLog[fromAccNo].ContainsKey(transactionType))
             {
-                var tr = t as Transfer;
-                tr.To = to;
-                loggers[from][type].Add(tr as Transaction);
-                return;
+                transactionLog[fromAccNo][transactionType] = new List<Transaction>();
             }
 
-            loggers[from][type].Add(t as Transaction);
-            return;
+            transactionLog[fromAccNo][transactionType].Add(t);
         }
 
-        public List<Transaction> GetLogs(int accNo,TRANSACTIONTYPE t) 
+        public List<Transaction> GetLogs(int accNo, TransactionType transactionType)
         {
-            return loggers[accNo][t];
+            return transactionLog.ContainsKey(accNo) ? (transactionLog[accNo].ContainsKey(transactionType) ? transactionLog[accNo][transactionType] : null) : null;
         }
 
     }

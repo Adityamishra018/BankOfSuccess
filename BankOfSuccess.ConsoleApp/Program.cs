@@ -22,6 +22,7 @@ namespace BankOfSuccess.ConsoleApp
     {
         IAccountManager accmgr = null;
         List<Account> accounts = new List<Account>();
+        List<INotification> notifications = new List<INotification>();
         public AccountForm(IAccountManager accmgr)
         {
             this.accmgr = accmgr;
@@ -34,7 +35,7 @@ namespace BankOfSuccess.ConsoleApp
         public void ShowAccounts(List<Account> accounts)
         {
             Console.WriteLine($"{"Sno",-5}{"Account No",-15}{"Type",-10}{"Name",-15}{"Balance",-10}{"Active",-10}\n");
-            if(accounts == null)
+            if (accounts == null)
             {
                 return;
             }
@@ -74,6 +75,7 @@ namespace BankOfSuccess.ConsoleApp
                     Console.WriteLine("5. Withdraw Money");
                     Console.WriteLine("6. Transfer Money");
                     Console.WriteLine("7. Close Account");
+                    Console.WriteLine("8. Subscribe To Notifications");
 
 
                     Console.Write("\nEnter choice: ");
@@ -133,7 +135,7 @@ namespace BankOfSuccess.ConsoleApp
                             Console.Write("\nEnter Amount: ");
                             amnt = float.Parse(Console.ReadLine());
 
-                            if (accmgr.Deposit(accounts[from-1], amnt))
+                            if (accmgr.Deposit(accounts[from - 1], amnt))
                                 Console.WriteLine("Amount Deposited");
 
                             Console.Write("\nPress Enter to get to Main menu");
@@ -152,7 +154,7 @@ namespace BankOfSuccess.ConsoleApp
                             Console.Write("\nEnter Pin: ");
                             pin = int.Parse(Console.ReadLine());
 
-                            if (accmgr.Withdraw(accounts[from-1], amnt, pin))
+                            if (accmgr.Withdraw(accounts[from - 1], amnt, pin))
                                 Console.WriteLine("Amount Withdrawn");
                             else
                                 Console.WriteLine("Something Went Wrong!");
@@ -182,8 +184,8 @@ namespace BankOfSuccess.ConsoleApp
                             Console.Write("\nEnter Pin: ");
                             pin = int.Parse(Console.ReadLine());
 
-                            if (accmgr.Transfer(accounts[from-1], accounts[to-1], amnt, pin, (TRANSFERMODE)mode))
-                                Console.WriteLine($"Money Transfered Successfully using {(TRANSFERMODE)mode}");
+                            if (accmgr.Transfer(accounts[from - 1], accounts[to - 1], amnt, pin, (TransferMode)mode))
+                                Console.WriteLine($"Money Transfered Successfully using {(TransferMode)mode}");
                             else
                                 Console.WriteLine("Something Went Wrong!");
 
@@ -198,7 +200,7 @@ namespace BankOfSuccess.ConsoleApp
                             Console.Write("Pick Account: ");
                             from = int.Parse(Console.ReadLine());
 
-                            if (accmgr.CloseAccount(accounts[from-1]))
+                            if (accmgr.CloseAccount(accounts[from - 1]))
                                 Console.WriteLine("Account Closed");
                             else
                                 Console.WriteLine("Something Went Wrong");
@@ -207,31 +209,66 @@ namespace BankOfSuccess.ConsoleApp
                             Console.ReadLine();
                             Console.Clear();
                             break;
+                        case "8":
+                            ShowAccounts(accounts);
+
+                            Console.Write("Pick Account: ");
+                            from = int.Parse(Console.ReadLine());
+
+                            notifications = Subscribe();
+                            foreach (INotification notification in notifications)
+                            {
+                                accounts[from - 1].SubscribeToNotification(notification);
+
+                            }
+
+                            Console.Write("\nPress Enter to get to Main menu");
+                            Console.ReadLine();
+                            Console.Clear();
+                            break;
+                        default: break;
                     }
                 }
                 catch (TransactionFailedException e)
                 {
                     Console.WriteLine("EXCEPTION: " + e.Message);
+                    ErrorLogger.WriteLog(e.Message);
                     Console.Write("\nPress Enter to get to Main menu");
                     Console.ReadLine();
                     Console.Clear();
-                    ErrorLogger.WriteLog(e.Message);
                 }
                 catch (AccountException e)
                 {
                     Console.WriteLine("EXCEPTION: " + e.Message);
+                    ErrorLogger.WriteLog(e.Message);
                     Console.Write("\nPress Enter to get to Main menu");
                     Console.ReadLine();
                     Console.Clear();
-                    ErrorLogger.WriteLog(e.Message);
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     ErrorLogger.WriteLog(ex.Message);
                 }
 
             }
         }
+        private List<INotification> Subscribe()
+        {
+            List<INotification> list = new List<INotification>();
+            Console.WriteLine("Subscribe Whatsapp? y/n?: ");
+            char res = char.Parse(Console.ReadLine());
+            if (res == 'y')
+                list.Add(new WhatsappNotification());
 
+
+
+            Console.WriteLine("Subscribe Email? y/n?");
+            res = char.Parse(Console.ReadLine());
+            if (res == 'y')
+                list.Add(new EmailNotification());
+
+
+            return list;
+        }
     }
 }
