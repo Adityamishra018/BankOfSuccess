@@ -116,7 +116,7 @@ namespace BankOfSuccess.Business.UnitTesting
         {
             var sa = mgr.OpenSavingsAccount("Aditya", 1234, "M", "1133131", new DateTime(1999, 10, 19), 500);
             var ca = mgr.OpenCurrentAccount("Aditya", 1234, "cognizant", "sasas", "21DW");
-            Assert.IsTrue(mgr.Transfer(sa, ca, 300, 1234, TRANSFERMODE.NEFT));
+            Assert.IsTrue(mgr.Transfer(sa, ca, 300, 1234, TransferMode.NEFT));
             Assert.IsTrue(ca.Bal == 800);
         }
 
@@ -125,7 +125,7 @@ namespace BankOfSuccess.Business.UnitTesting
         {
             var sa = mgr.OpenSavingsAccount("Aditya", 1234, "M", "1133131", new DateTime(1999, 10, 19), 500);
             var ca = mgr.OpenCurrentAccount("Aditya", 1234, "cognizant", "sasas", "21DW");
-            mgr.Transfer(sa, ca, 800, 1234, TRANSFERMODE.NEFT);
+            mgr.Transfer(sa, ca, 800, 1234, TransferMode.NEFT);
         }
 
         [TestMethod, ExpectedException(typeof(TransactionFailedException))]
@@ -133,7 +133,7 @@ namespace BankOfSuccess.Business.UnitTesting
         {
             var sa = mgr.OpenSavingsAccount("Aditya", 1234, "M", "1133131", new DateTime(1999, 10, 19), 500);
             var ca = mgr.OpenCurrentAccount("Aditya", 1234, "cognizant", "sasas", "21DW");
-            mgr.Transfer(sa, ca, 300, 1242, TRANSFERMODE.IMPS);
+            mgr.Transfer(sa, ca, 300, 1242, TransferMode.IMPS);
         }
 
         [TestMethod, ExpectedException(typeof(AccountException))]
@@ -142,7 +142,7 @@ namespace BankOfSuccess.Business.UnitTesting
             var sa = mgr.OpenSavingsAccount("Aditya", 1234, "M", "1133131", new DateTime(1999, 10, 19), 500);
             var ca = mgr.OpenCurrentAccount("Aditya", 1234, "cognizant", "sasas", "21DW");
             mgr.CloseAccount(sa);
-            mgr.Transfer(sa, ca, 800, 1242, TRANSFERMODE.IMPS);
+            mgr.Transfer(sa, ca, 800, 1242, TransferMode.IMPS);
         }
 
         [TestMethod, ExpectedException(typeof(TransactionFailedException))]
@@ -150,9 +150,9 @@ namespace BankOfSuccess.Business.UnitTesting
         {
             var sa = mgr.OpenSavingsAccount("Aditya", 1234, "M", "1133131", new DateTime(1999, 10, 19), 50000);
             var ca = mgr.OpenCurrentAccount("Aditya", 1234, "cognizant", "sasas", "21DW");
-            mgr.Transfer(sa, ca, 20000, 1234, TRANSFERMODE.IMPS);
-            mgr.Transfer(sa, ca, 5000, 1234, TRANSFERMODE.IMPS);
-            mgr.Transfer(sa, ca, 1000, 1234, TRANSFERMODE.IMPS); //fails here
+            mgr.Transfer(sa, ca, 20000, 1234, TransferMode.IMPS);
+            mgr.Transfer(sa, ca, 5000, 1234, TransferMode.IMPS);
+            mgr.Transfer(sa, ca, 1000, 1234, TransferMode.IMPS); //fails here
         }
 
         [TestCleanup]
@@ -165,7 +165,7 @@ namespace BankOfSuccess.Business.UnitTesting
     [TestClass]
     public class TestLogger
     {
-        ILogTransactions _logger = null;
+        ILogManager _logger = null;
         [TestInitialize]
         public void Init()
         {
@@ -175,7 +175,7 @@ namespace BankOfSuccess.Business.UnitTesting
         public void CreateLog_Success()
         {
             _logger.CreateLog(123);
-            var li = _logger.GetLogs(123,TRANSACTIONTYPE.TRANSFER);
+            var li = _logger.GetLogs(123,TransactionType.TRANSFER);
             Assert.IsTrue(li.Count == 0);
         }
 
@@ -183,8 +183,8 @@ namespace BankOfSuccess.Business.UnitTesting
         public void UpdateLog_Success()
         {
             _logger.CreateLog(123);
-            _logger.UpdateLog(123,300,TRANSACTIONTYPE.DEPOSIT);
-            var log = _logger.GetLogs(123,TRANSACTIONTYPE.DEPOSIT);
+            _logger.UpdateLog(123,300,TransactionType.DEPOSIT);
+            var log = _logger.GetLogs(123,TransactionType.DEPOSIT);
             Assert.IsTrue(300 == log.Sum(t => t.Amt));
         }
 
@@ -192,7 +192,7 @@ namespace BankOfSuccess.Business.UnitTesting
         public void GetLog_Success()
         {
             _logger.CreateLog(123);
-            var log = _logger.GetLogs(123,TRANSACTIONTYPE.DEPOSIT);
+            var log = _logger.GetLogs(123,TransactionType.DEPOSIT);
             Assert.IsNotNull(log);
         }
 

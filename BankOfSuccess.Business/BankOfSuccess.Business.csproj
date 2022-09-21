@@ -46,7 +46,7 @@
     <Compile Include="AccountManager.cs" />
     <Compile Include="ErrorLogger.cs" />
     <Compile Include="IAccountManager.cs" />
-    <Compile Include="ILogTransactions.cs" />
+    <Compile Include="ILogManager.cs" />
     <Compile Include="LogManager.cs" />
     <Compile Include="TransactionFailedException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

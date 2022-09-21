@@ -2,20 +2,18 @@
 using System.Linq;
 using BankOfSuccess.Data.Entities;
 using BankOfSuccess.Data;
+using System.Security.Principal;
 
 namespace BankOfSuccess.Business
 {
-    public enum TRANSFERMODE
-    {
-        IMPS, NEFT, RTGS
-    }
+
     public sealed class AccountManager : IAccountManager
     {
-        private ILogTransactions _logger = new LogManager();
+        private ILogManager _logger = new LogManager();
         public static readonly AccountManager GetInstance = new AccountManager();
         AccountFactory _factory = AccountFactory.GetInstance;
         private AccountManager() { }
-        public void SetLogger(ILogTransactions logger)
+        public void SetLogger(ILogManager logger)
         {
             _logger = logger;
         }
@@ -64,6 +62,9 @@ namespace BankOfSuccess.Business
                     if (acc.Bal >= amnt)
                     {
                         acc.Bal -= amnt;
+                        Withdrawal withdrawal = new Withdrawal { AccNo = acc.AccNo, Amt = amnt, Date = DateTime.Now };
+                        _logger.AddTransactionToLog(acc.AccNo, TransactionType.Withdrawal, withdrawal);
+                        acc.Notify(withdrawal);
                         return true;
                     }
                     else
@@ -81,12 +82,15 @@ namespace BankOfSuccess.Business
             if (acc.IsActive)
             {
                 acc.Bal += amnt;
+                Deposit deposit = new Deposit { AccNo = acc.AccNo, Amt = amnt, Date = DateTime.Now };
+                _logger.AddTransactionToLog(acc.AccNo, TransactionType.Deposit, deposit);
+                acc.Notify(deposit);
                 return true;
             }
             throw new AccountException("Account Closed Cannot Deposit");
         }
 
-        public bool Transfer(Account from, Account to, float amnt, int pin, TRANSFERMODE mode)
+        public bool Transfer(Account from, Account to, float amnt, int pin, TransferMode mode)
         {
             if (from.IsActive & to.IsActive)
             {
@@ -95,14 +99,20 @@ namespace BankOfSuccess.Business
 
                 if (from.Pin == pin)
                 {
-                    var transactions = _logger.GetLogs(from.AccNo,TRANSACTIONTYPE.TRANSFER);
-                    float total = transactions.Where(t => t.Date.Date == DateTime.Today).Sum(t => t.Amt);
-
-                    if (total + amnt <= (float)from.Privelege)
+                    var transactions = _logger.GetLogs(from.AccNo, TransactionType.Transfer);
+                    float total = 0;
+                    if (transactions != null)
+                    {
+                        total = transactions.Where(t => t.Date.Date == DateTime.Today).Sum(t => t.Amt);
+                    }
+                    if (total + amnt <= (float)from.Privilege)
                     {
                         from.Bal -= amnt;
                         to.Bal += amnt;
-                        _logger.UpdateLog(from.AccNo, amnt,TRANSACTIONTYPE.TRANSFER,to.AccNo);
+                        Transfer transfer = new Transfer { AccNo = from.AccNo, Amt = amnt, Date = DateTime.Now, ToAccNo = to.AccNo, TransferMode = mode };
+                        _logger.AddTransactionToLog(from.AccNo, TransactionType.Transfer, transfer);
+                        to.Notify(transfer);
+                        from.Notify(transfer);
                         return true;
                     }
                     else
