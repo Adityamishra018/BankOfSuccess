@@ -65,6 +65,7 @@ namespace BankOfSuccess.Business
                         Withdrawal withdrawal = new Withdrawal { AccNo = acc.AccNo, Amt = amnt, Date = DateTime.Now };
                         _logger.AddTransactionToLog(acc.AccNo, TransactionType.Withdrawal, withdrawal);
                         acc.Notify(withdrawal);
+                        TransactionDatabase.AddTransactionData(acc.AccNo, DateTime.Now, amnt);
                         return true;
                     }
                     else
@@ -85,6 +86,8 @@ namespace BankOfSuccess.Business
                 Deposit deposit = new Deposit { AccNo = acc.AccNo, Amt = amnt, Date = DateTime.Now };
                 _logger.AddTransactionToLog(acc.AccNo, TransactionType.Deposit, deposit);
                 acc.Notify(deposit);
+                
+                TransactionDatabase.AddTransactionData(acc.AccNo, DateTime.Now, amnt);
                 return true;
             }
             throw new AccountException("Account Closed Cannot Deposit");
@@ -113,6 +116,7 @@ namespace BankOfSuccess.Business
                         _logger.AddTransactionToLog(from.AccNo, TransactionType.Transfer, transfer);
                         to.Notify(transfer);
                         from.Notify(transfer);
+                        TransactionDatabase.AddTransactionData(from.AccNo, to.AccNo, DateTime.Now, amnt);
                         return true;
                     }
                     else
