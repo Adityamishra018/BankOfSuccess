@@ -1,0 +1,72 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{8150B0A5-C427-41A0-B28A-9CCE4CDFAB27}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>BankOfSuccessCS.UI</RootNamespace>
+    <AssemblyName>BankOfSuccessCS.UI</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BankOfSuccessCS.Business.Core\BankOfSuccessCS.Business.Core.csproj">
+      <Project>{9b1cc3d7-daf6-4c85-bbcf-daa89ea0998d}</Project>
+      <Name>BankOfSuccessCS.Business.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\BankOfSuccessCS.Business.Logging\BankOfSuccessCS.Business.Logging.csproj">
+      <Project>{adc4dfde-c7b0-4091-aacf-c6a492a067fe}</Project>
+      <Name>BankOfSuccessCS.Business.Logging</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\BankOfSuccessCS.Business.Notification\BankOfSuccessCS.Business.Notification.csproj">
+      <Project>{b976de66-cc45-4ced-a054-eddc19467d91}</Project>
+      <Name>BankOfSuccessCS.Business.Notification</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\BankOfSuccessCS.Models\BankOfSuccessCS.Models.csproj">
+      <Project>{35ab281d-3ae9-457a-b229-aa8cbaca5ba0}</Project>
+      <Name>BankOfSuccessCS.Models</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
