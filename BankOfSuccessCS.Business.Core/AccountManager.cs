@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,10 +14,13 @@ namespace BankOfSuccessCS.Business.Core
     {
         ILogManager _logger;
         ITransactionManager _transactionManager;
+        ICardManager _cardManager;
         public AccountManager() 
         {
             _logger = LogManagerFactory.GetLogManager();
             _transactionManager = TransactionManagerFactory.GetTransactionManager();
+            _cardManager = CardManagerFactory.GetCardManager();
+
         }
         public Account OpenSavingsAccount(string name, int pin, string gender, DateTime dob,string mail,string ph, int balance = 500)
         {
@@ -29,6 +33,9 @@ namespace BankOfSuccessCS.Business.Core
                 ac.DOB = dob;
                 ac.Bal = balance;
                 _transactionManager.Create(ac.AccNo);
+                var card = (DebitCard)CardFactory.GetCard();
+                card.Account = ac;
+                _cardManager.AddCard(card);
                 return ac;
             }
             else
@@ -46,6 +53,9 @@ namespace BankOfSuccessCS.Business.Core
                 ac.RegistrationNo = regNo;
                 ac.Bal = balance;
                 _transactionManager.Create(ac.AccNo);
+                var card = (DebitCard)CardFactory.GetCard();
+                card.Account = ac;
+                _cardManager.AddCard(card);
                 return ac;
             }
             else
@@ -75,6 +85,7 @@ namespace BankOfSuccessCS.Business.Core
                         Withdrawal withdrawal = new Withdrawal { Acc = acc, Amt = amnt, Date = DateTime.Now };
                         acc.Notify(withdrawal);
                         _logger.Log(ConfigurationManager.AppSettings["TransactionLogPath"],withdrawal.ToString());
+                        _transactionManager.Add(acc.AccNo, TransactionType.WITHDRAWAL, withdrawal);
                         return true;
                     }
                     else
@@ -95,6 +106,8 @@ namespace BankOfSuccessCS.Business.Core
                 Deposit deposit = new Deposit { Acc = acc, Amt = amnt, Date = DateTime.Now };
                 acc.Notify(deposit);
                 _logger.Log(ConfigurationManager.AppSettings["TransactionLogPath"],deposit.ToString());
+                _transactionManager.Add(acc.AccNo, TransactionType.DEPOSIT, deposit);
+
                 return true;
             }
             throw new AccountAlreadyClosedException();
@@ -120,6 +133,7 @@ namespace BankOfSuccessCS.Business.Core
                         from.Notify(transfer);
                         to.Notify(transfer);
                         _logger.Log(ConfigurationManager.AppSettings["TransactionLogPath"],transfer.ToString());
+                        _transactionManager.Add(from.AccNo, TransactionType.TRANSFER, transfer);
                         return true;
                     }
                     else
@@ -132,5 +146,35 @@ namespace BankOfSuccessCS.Business.Core
             else
                 throw new AccountAlreadyClosedException();
         }
+
+        public bool GenerateStatement(Account acc)
+        {
+            List<Transaction> transactions = _transactionManager.Get(acc.AccNo,TransactionType.TRANSFER);
+            transactions = transactions.Concat(_transactionManager.Get(acc.AccNo, TransactionType.WITHDRAWAL)).ToList();
+            transactions = transactions.Concat(_transactionManager.Get(acc.AccNo, TransactionType.DEPOSIT)).ToList();
+
+            string output="";
+            foreach (var transc in transactions)
+            {
+                if(transc.GetType() == typeof(Transfer))
+                {
+                    var tr = transc as Transfer;
+                    output += $"{tr.GetType().Name} : {tr.Acc.AccNo} to {tr.ToAcc} of Amount {tr.Amt} on {tr.Date}\n";
+                }
+                else
+                    output += $"{transc.GetType().Name} : {transc.Acc.AccNo} of Amount {transc.Amt} on {transc.Date}\n";
+            }
+
+            Task.Run(() =>
+            {
+                StreamWriter writer = new StreamWriter(ConfigurationManager.AppSettings["StatementLogPath"]);
+                writer.Write(output);
+                writer.Close();
+                acc.Notify($"{acc.Email},{acc.PhoneNo}");
+            });
+
+            return true;
+        }
+
     }
 }

@@ -44,6 +44,9 @@
   <ItemGroup>
     <Compile Include="AccountManager.cs" />
     <Compile Include="AccountManagerFactory.cs" />
+    <Compile Include="CardManagerFactory.cs" />
+    <Compile Include="DebitCardManager.cs" />
+    <Compile Include="Dispatcher.cs" />
     <Compile Include="Exceptions\AccountAlreadyClosedException.cs" />
     <Compile Include="Exceptions\AccountCannotBeClosedException.cs" />
     <Compile Include="Exceptions\AccountDoesNotExistException.cs" />
@@ -53,6 +56,7 @@
     <Compile Include="Exceptions\LimitExceededException.cs" />
     <Compile Include="Exceptions\RegistrationIsNullExcepiton.cs" />
     <Compile Include="IAccountManager.cs" />
+    <Compile Include="ICardManager.cs" />
     <Compile Include="IPrivilegeManager.cs" />
     <Compile Include="ITransactionManager.cs" />
     <Compile Include="PrivilegeManager.cs" />

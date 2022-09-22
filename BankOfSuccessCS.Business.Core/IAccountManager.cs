@@ -10,6 +10,8 @@ namespace BankOfSuccessCS.Business.Core
         bool Withdraw(Account acc, float amnt, int pin);
         bool Deposit(Account acc, float amnt);
         bool Transfer(Account from, Account to, float amnt, int pin, TransferMode mode);
+
+        bool GenerateStatement(Account acc);
     }
 
 }

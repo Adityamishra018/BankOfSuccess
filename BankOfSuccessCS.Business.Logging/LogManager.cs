@@ -7,7 +7,9 @@ namespace BankOfSuccessCS.Business.Logging
     {
         public void Log(string path,string message)
         {
-            File.WriteAllText(path, message);
+            StreamWriter writer = new StreamWriter(path,true);
+            writer.Write(message);
+            writer.Close();
         }
     }
 }

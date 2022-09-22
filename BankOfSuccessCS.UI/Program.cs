@@ -61,6 +61,11 @@ namespace BankOfSuccessCS.UI
             accounts.Add(accMgr.OpenSavingsAccount("Aditya", 1234, "M", new DateTime(1998,10,10),"adi.adityamishra007@gmail.com", "+917389695954",50000));
             accounts.Add(accMgr.OpenCurrentAccount("Abhishek", 1234, "Cognizant", "Cog.Com", "10XSAS","abhisheksaurabh444@gmail.com", "+917389695954", 20000));
 
+            accounts.Add(accMgr.OpenCurrentAccount("Saumyajit", 1234, "Cognizant", "Cog.Com", "10XSAS", "saumyajit99@gmail.com", "+919515859244", 50000));
+
+            accounts.Add(accMgr.OpenCurrentAccount("Shashwat", 1234, "Cognizant", "Cog.Com", "10XSAS", "shashwat16suyash@gmail.com", "+918709794734", 50000));
+
+
             while (true)
             {
                 try
@@ -76,6 +81,8 @@ namespace BankOfSuccessCS.UI
                     Console.WriteLine("6. Transfer Money");
                     Console.WriteLine("7. Close Account");
                     Console.WriteLine("8. Subscribe To Notifications");
+                    Console.WriteLine("9. Generate Account Statement");
+
 
 
                     Console.Write("\nEnter choice: ");
@@ -232,6 +239,18 @@ namespace BankOfSuccessCS.UI
                                 accounts[from - 1].Subscribe(new SMSNotification());
 
                             Console.WriteLine("Subscription Added\n");
+                            Console.Write("\nPress Enter to get to Main menu");
+                            Console.ReadLine();
+                            Console.Clear();
+                            break;
+
+                        case "9":
+                            ShowAccounts(accounts);
+
+                            Console.Write("Pick Account: ");
+                            from = int.Parse(Console.ReadLine());
+                            accMgr.GenerateStatement(accounts[from - 1]);
+                            Console.WriteLine("\nStatement will be received through subscription");
                             Console.Write("\nPress Enter to get to Main menu");
                             Console.ReadLine();
                             Console.Clear();
