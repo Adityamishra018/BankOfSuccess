@@ -8,6 +8,8 @@
 
     public interface INotify
     {
+        void Subscribe(INotification notification);
+        void UnSubscribe(INotification notification);
         void Notify(string message);
         void Notify(Transaction t);
     }
